@@ -14,7 +14,7 @@ interface DonutChartProps {
 const DonutChart: React.FC<DonutChartProps> = ({
   data,
   size = 200,
-  thickness = 60, // Increased default thickness from 40 to 60
+  thickness = 60,
 }) => {
   // Filter out any data with 0 or negative values
   const filteredData = data.filter(item => item.amount > 0);
@@ -182,13 +182,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
           );
         })}
 
-        {/* Display total in center - improved with background and better formatting */}
-        <Circle
-          cx={center}
-          cy={center}
-          r={radius * 0.6} // Background circle for total
-          fill="white"
-        />
+        {/* Remove the white circle background */}
+
+        {/* Title text "Total" */}
         <SvgText
           x={center}
           y={center - 10}
@@ -197,14 +193,25 @@ const DonutChart: React.FC<DonutChartProps> = ({
           fontSize="14">
           Total
         </SvgText>
+
+        {/* Center the currency display with improved positioning */}
         <SvgText
-          x={center}
+          x={center - 30}
           y={center + 16}
-          textAnchor="middle"
+          textAnchor="end"
           fill="#333"
           fontSize="18"
           fontWeight="bold">
-          R{totalFormatted}
+          R
+        </SvgText>
+        <SvgText
+          x={center - 20}
+          y={center + 16}
+          textAnchor="start"
+          fill="#333"
+          fontSize="18"
+          fontWeight="bold">
+          {totalFormatted}
         </SvgText>
       </Svg>
     </View>
