@@ -135,8 +135,8 @@ const ReportScreen: React.FC = () => {
             <View style={styles.chartContainer}>
               <DonutChart
                 data={filteredDistribution}
-                size={220}
-                thickness={40}
+                size={260} // Increased from 220 to 240 for more space
+                thickness={60} // Increased from 40 to 70 for a wider ring
               />
             </View>
 

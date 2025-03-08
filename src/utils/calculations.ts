@@ -112,10 +112,14 @@ export const getCategoryDistribution = (
 
 // Format currency to local string with 2 decimal places
 export const formatCurrency = (amount: number): string => {
-  return amount.toLocaleString('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  // Format number to have 2 decimal places
+  // Replace comma with dot for display in the donut chart center
+  return amount
+    .toLocaleString('en-ZA', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+    .replace(',', '.');
 };
 
 // Group transactions by date

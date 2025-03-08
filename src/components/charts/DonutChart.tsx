@@ -1,6 +1,7 @@
+// src/components/charts/DonutChart.tsx
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import Svg, {Circle, G, Text as SvgText, TSpan} from 'react-native-svg';
+import Svg, {Circle, G, Text as SvgText} from 'react-native-svg';
 import {CategorySpending} from '../../types';
 import {formatCurrency} from '../../utils/calculations';
 
@@ -13,7 +14,7 @@ interface DonutChartProps {
 const DonutChart: React.FC<DonutChartProps> = ({
   data,
   size = 200,
-  thickness = 40,
+  thickness = 60, // Increased default thickness from 40 to 60
 }) => {
   // Filter out any data with 0 or negative values
   const filteredData = data.filter(item => item.amount > 0);
@@ -181,24 +182,29 @@ const DonutChart: React.FC<DonutChartProps> = ({
           );
         })}
 
-        {/* Display total in center */}
-        <SvgText x={center} y={center} textAnchor="middle" fill="#333">
-          <TSpan
-            x={center}
-            dy="-10"
-            fontSize="12"
-            fill="#666"
-            textAnchor="middle">
-            Total
-          </TSpan>
-          <TSpan
-            x={center}
-            dy="22"
-            fontSize="16"
-            fontWeight="bold"
-            textAnchor="middle">
-            R{totalFormatted}
-          </TSpan>
+        {/* Display total in center - improved with background and better formatting */}
+        <Circle
+          cx={center}
+          cy={center}
+          r={radius * 0.6} // Background circle for total
+          fill="white"
+        />
+        <SvgText
+          x={center}
+          y={center - 10}
+          textAnchor="middle"
+          fill="#666"
+          fontSize="14">
+          Total
+        </SvgText>
+        <SvgText
+          x={center}
+          y={center + 16}
+          textAnchor="middle"
+          fill="#333"
+          fontSize="18"
+          fontWeight="bold">
+          R{totalFormatted}
         </SvgText>
       </Svg>
     </View>
