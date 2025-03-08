@@ -1,6 +1,6 @@
 import React, {createContext, useState, useEffect, ReactNode} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {v4 as uuidv4} from 'uuid';
+import uuid from 'react-native-uuid';
 import {
   Transaction,
   Category,
@@ -118,7 +118,7 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
   const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
     const newTransaction = {
       ...transaction,
-      id: uuidv4(),
+      id: uuid.v4().toString(), // Change here
     };
 
     setTransactions(prev => [...prev, newTransaction]);
@@ -148,7 +148,7 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
   const addCategory = (category: Omit<Category, 'id'>) => {
     const newCategory = {
       ...category,
-      id: uuidv4(),
+      id: uuid.v4().toString(), // Change here
     };
     setCategories(prev => [...prev, newCategory]);
   };
@@ -172,7 +172,7 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
       // Add new budget
       const newBudget = {
         ...budget,
-        id: uuidv4(),
+        id: uuid.v4().toString(), // Change here
       };
       setBudgets(prev => [...prev, newBudget]);
     }
