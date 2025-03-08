@@ -97,7 +97,7 @@ const TransactionHistory = () => {
             styles.transactionAmount,
             isIncome ? styles.incomeText : styles.expenseText,
           ]}>
-          {isIncome ? '+' : '-'} ${formatCurrency(item.amount)}
+          {isIncome ? '+' : '-'} R{formatCurrency(item.amount)}
         </Text>
       </TouchableOpacity>
     );
@@ -120,7 +120,7 @@ const TransactionHistory = () => {
           styles.dayTotalText,
           section.dayTotal >= 0 ? styles.incomeText : styles.expenseText,
         ]}>
-        {section.dayTotal >= 0 ? '+' : ''} ${formatCurrency(section.dayTotal)}
+        {section.dayTotal >= 0 ? '+' : ''} R{formatCurrency(section.dayTotal)}
       </Text>
     </View>
   );

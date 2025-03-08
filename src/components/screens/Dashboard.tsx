@@ -116,7 +116,7 @@ const Dashboard = () => {
             styles.transactionAmount,
             isIncome ? styles.incomeText : styles.expenseText,
           ]}>
-          {isIncome ? '+' : '-'} ${formatCurrency(item.amount)}
+          {isIncome ? '+' : '-'} R{formatCurrency(item.amount)}
         </Text>
       </TouchableOpacity>
     );
@@ -139,19 +139,19 @@ const Dashboard = () => {
           <Text style={styles.balanceTitle}>Current Balance</Text>
         </View>
         <Text style={styles.balanceAmount}>
-          ${formatCurrency(currentBalance)}
+          R{formatCurrency(currentBalance)}
         </Text>
         <View style={styles.incomeExpenseRow}>
           <View style={styles.incomeContainer}>
             <Text style={styles.incomeExpenseLabel}>Income</Text>
             <Text style={styles.incomeText}>
-              +${formatCurrency(monthlyIncome)}
+              +R{formatCurrency(monthlyIncome)}
             </Text>
           </View>
           <View style={styles.expenseContainer}>
             <Text style={styles.incomeExpenseLabel}>Expenses</Text>
             <Text style={styles.expenseText}>
-              -${formatCurrency(monthlyExpenses)}
+              -R{formatCurrency(monthlyExpenses)}
             </Text>
           </View>
         </View>
@@ -197,7 +197,7 @@ const Dashboard = () => {
                       </Text>
                     </View>
                     <Text style={styles.budgetAmount}>
-                      ${formatCurrency(item.spent)} / $
+                      R{formatCurrency(item.spent)} / R
                       {formatCurrency(item.budget?.amount || 0)}
                     </Text>
                   </View>

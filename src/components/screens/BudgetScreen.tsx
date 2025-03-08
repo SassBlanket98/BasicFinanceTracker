@@ -86,7 +86,7 @@ const BudgetScreen = () => {
         </View>
         {existingBudget && (
           <Text style={styles.existingBudgetText}>
-            ${formatCurrency(existingBudget.amount)} / {existingBudget.period}
+            R{formatCurrency(existingBudget.amount)} / {existingBudget.period}
           </Text>
         )}
       </TouchableOpacity>
@@ -134,10 +134,10 @@ const BudgetScreen = () => {
                 <View style={styles.budgetDetails}>
                   <View style={styles.amountContainer}>
                     <Text style={styles.spentText}>
-                      ${formatCurrency(item.spent || 0)}
+                      R{formatCurrency(item.spent || 0)}
                     </Text>
                     <Text style={styles.limitText}>
-                      of ${formatCurrency(item.budget.amount || 0)}
+                      of R{formatCurrency(item.budget.amount || 0)}
                     </Text>
                   </View>
 
@@ -148,7 +148,7 @@ const BudgetScreen = () => {
                         styles.remainingAmount,
                         (item.remaining || 0) < 0 && styles.overBudgetText,
                       ]}>
-                      ${formatCurrency(Math.abs(item.remaining || 0))}
+                      R{formatCurrency(Math.abs(item.remaining || 0))}
                       {(item.remaining || 0) < 0 ? ' over' : ''}
                     </Text>
                   </View>

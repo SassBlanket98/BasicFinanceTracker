@@ -129,13 +129,13 @@ const ReportScreen: React.FC = () => {
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Income</Text>
             <Text style={styles.incomeText}>
-              ${formatCurrency(totalIncome)}
+              R{formatCurrency(totalIncome)}
             </Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Expenses</Text>
             <Text style={styles.expenseText}>
-              ${formatCurrency(totalExpenses)}
+              R{formatCurrency(totalExpenses)}
             </Text>
           </View>
         </View>
@@ -148,7 +148,7 @@ const ReportScreen: React.FC = () => {
                   ? styles.incomeText
                   : styles.expenseText
               }>
-              ${formatCurrency(totalIncome - totalExpenses)}
+              R{formatCurrency(totalIncome - totalExpenses)}
             </Text>
           </View>
           <View style={styles.summaryItem}>
@@ -191,7 +191,7 @@ const ReportScreen: React.FC = () => {
                       {item.category.name}
                     </Text>
                     <Text style={styles.legendAmount}>
-                      ${formatCurrency(item.amount)}
+                      R{formatCurrency(item.amount)}
                     </Text>
                   </View>
                   <Text style={styles.legendPercentage}>

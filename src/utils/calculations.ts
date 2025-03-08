@@ -90,7 +90,9 @@ export const getCategoryDistribution = (
   const filteredTransactions = transactions.filter(t => t.type === type);
   const total = getTotal(filteredTransactions, type);
 
-  if (total === 0) return [];
+  if (total === 0) {
+    return [];
+  }
 
   // Get categories of the specified type
   const typeCategories = categories.filter(c => c.type === type);
@@ -110,7 +112,7 @@ export const getCategoryDistribution = (
 
 // Format currency to local string with 2 decimal places
 export const formatCurrency = (amount: number): string => {
-  return amount.toLocaleString(undefined, {
+  return amount.toLocaleString('en-ZA', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

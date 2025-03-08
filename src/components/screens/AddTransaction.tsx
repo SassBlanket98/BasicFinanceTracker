@@ -171,7 +171,7 @@ const AddTransaction = () => {
           onChangeText={setAmount}
           placeholder="0.00"
           keyboardType="numeric"
-          prefix="$"
+          prefix="R"
           error={errors.amount}
         />
 
