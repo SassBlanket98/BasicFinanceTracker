@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   budgetCard: {
+    marginTop: 10,
     marginHorizontal: 16,
     marginBottom: 16,
   },
