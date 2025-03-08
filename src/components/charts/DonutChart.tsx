@@ -151,14 +151,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
           return (
             <G key={`label-${index}`}>
-              {/* Background to improve readability */}
-              <Circle
-                cx={segment.labelX}
-                cy={segment.labelY}
-                r={20}
-                fill="white"
-                opacity={0.7}
-              />
               {/* Percentage text */}
               <SvgText
                 x={segment.labelX}
