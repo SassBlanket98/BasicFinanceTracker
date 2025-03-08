@@ -6,18 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  FlatList,
 } from 'react-native';
 import {useFinance} from '../../context/FinanceContext';
 import {useTransactions} from '../../hooks/useTransactions';
 import Card from '../common/Card';
 import Input from '../common/input';
 import Button from '../common/Button';
+import CategoryPicker from '../common/CategoryPicker';
 import {Budget, Category} from '../../types';
 import {formatCurrency} from '../../utils/calculations';
 
 const BudgetScreen = () => {
-  const {categories, budgets, setBudget} = useFinance();
+  const {budgets, setBudget} = useFinance();
   const {getBudgetProgress} = useTransactions();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -28,13 +28,9 @@ const BudgetScreen = () => {
   >('monthly');
   const [error, setError] = useState('');
 
-  // Get expense categories
-  const expenseCategories = categories.filter(c => c.type === 'expense');
-
   // Get current budget progress
   const budgetProgress = getBudgetProgress();
 
-  // Modify the handleAddBudget function to include a unique ID
   const handleAddBudget = () => {
     if (!selectedCategory) {
       setError('Please select a category');
@@ -63,34 +59,17 @@ const BudgetScreen = () => {
     setModalVisible(false);
   };
 
-  // Fix the implicit any type
-  const renderCategoryItem = ({item}: {item: Category}) => {
-    // Check if category already has a budget
-    const existingBudget = budgets.find(b => b.categoryId === item.id);
+  const handleCategorySelect = (category: Category) => {
+    setSelectedCategory(category.id);
 
-    return (
-      <TouchableOpacity
-        style={styles.categoryItem}
-        onPress={() => {
-          setSelectedCategory(item.id);
-          if (existingBudget) {
-            setBudgetAmount(existingBudget.amount.toString());
-            setBudgetPeriod(existingBudget.period);
-          } else {
-            setBudgetAmount('');
-          }
-        }}>
-        <View style={styles.categoryLeft}>
-          <View style={[styles.categoryDot, {backgroundColor: item.color}]} />
-          <Text style={styles.categoryName}>{item.name}</Text>
-        </View>
-        {existingBudget && (
-          <Text style={styles.existingBudgetText}>
-            R{formatCurrency(existingBudget.amount)} / {existingBudget.period}
-          </Text>
-        )}
-      </TouchableOpacity>
-    );
+    // Check if this category already has a budget and pre-fill if it does
+    const existingBudget = budgets.find(b => b.categoryId === category.id);
+    if (existingBudget) {
+      setBudgetAmount(existingBudget.amount.toString());
+      setBudgetPeriod(existingBudget.period);
+    } else {
+      setBudgetAmount('');
+    }
   };
 
   return (
@@ -205,23 +184,23 @@ const BudgetScreen = () => {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.sectionTitle}>Select Category</Text>
-            <FlatList
-              data={expenseCategories}
-              keyExtractor={item => item.id}
-              renderItem={renderCategoryItem}
-              style={styles.categoryList}
-            />
-
             <View style={styles.formContainer}>
+              <CategoryPicker
+                selectedCategoryId={selectedCategory}
+                onSelectCategory={handleCategorySelect}
+                transactionType="expense"
+                label="Select Budget Category"
+              />
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
               <Input
                 label="Budget Amount"
                 value={budgetAmount}
                 onChangeText={setBudgetAmount}
                 placeholder="0.00"
                 keyboardType="numeric"
-                prefix="$"
-                error={error}
+                prefix="R"
+                error=""
               />
 
               <Text style={styles.sectionTitle}>Budget Period</Text>
@@ -444,26 +423,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     paddingHorizontal: 16,
   },
-  categoryList: {
-    maxHeight: 200,
-  },
-  categoryItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  categoryLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  existingBudgetText: {
-    fontSize: 14,
-    color: '#666',
-  },
   formContainer: {
     padding: 16,
   },
@@ -494,6 +453,12 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: 8,
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 12,
+    marginTop: 4,
+    marginBottom: 16,
   },
 });
 
