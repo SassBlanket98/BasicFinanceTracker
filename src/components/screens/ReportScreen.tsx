@@ -79,6 +79,12 @@ const ReportScreen: React.FC = () => {
     (item: CategorySpending) => item.amount > 0,
   );
 
+  // Log the filtered distribution data
+  console.log('Chart Data:', filteredDistribution);
+
+  // Then make sure your PieChart component receives this data:
+  <PieChart data={filteredDistribution} size={180} />;
+
   const renderPeriodButton = (buttonPeriod: TimePeriod, label: string) => (
     <TouchableOpacity
       style={[

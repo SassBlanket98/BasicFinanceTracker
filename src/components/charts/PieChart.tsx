@@ -1,80 +1,81 @@
-import React from 'react';
+// src/components/charts/PieChartCanvas.tsx
+import React, {useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import Svg, {G, Path, Circle} from 'react-native-svg';
+import {Canvas, useCanvasRef} from '@shopify/react-native-skia';
 import {PieChartProps} from '../../types';
 
-const PieChart: React.FC<PieChartProps> = ({data, size = 200}) => {
+const PieChartCanvas: React.FC<PieChartProps> = ({data, size = 200}) => {
+  const canvasRef = useCanvasRef();
   const filteredData = data.filter(item => item.amount > 0);
-  const total = filteredData.reduce((sum, item) => sum + item.amount, 0);
 
-  // If no data or total is zero, return empty circle
-  if (filteredData.length === 0 || total === 0) {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || filteredData.length === 0) {
+      return;
+    }
+
+    const ctx = (canvas as any).getContext('2d');
+    const radius = size / 2;
+    const centerX = radius;
+    const centerY = radius;
+
+    let startAngle = 0;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, size, size);
+
+    // Draw pie slices
+    filteredData.forEach(item => {
+      const sliceAngle = (item.percentage / 100) * 2 * Math.PI;
+      const endAngle = startAngle + sliceAngle;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+
+      ctx.fillStyle = item.category.color;
+      ctx.fill();
+
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      startAngle = endAngle;
+    });
+
+    // Draw inner circle for donut effect
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 0.6, 0, 2 * Math.PI);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+  }, [canvasRef, filteredData, size]);
+
+  if (filteredData.length === 0) {
     return (
-      <View style={[styles.pieChartContainer, {width: size, height: size}]}>
-        <View style={[styles.emptyChart, {width: size, height: size}]} />
+      <View style={[styles.container, {width: size, height: size}]}>
+        <View style={[styles.emptyCircle, {width: size, height: size}]} />
       </View>
     );
   }
 
-  // Center and radius
-  const center = size / 2;
-  const radius = size / 2;
-  const innerRadius = radius * 0.7;
-
-  // Calculate segments
-  let currentAngle = 0;
-  const paths = filteredData.map(item => {
-    const percentage = item.amount / total;
-    const angle = percentage * 2 * Math.PI;
-
-    // Calculate SVG arc path
-    const x1 = center + radius * Math.sin(currentAngle);
-    const y1 = center - radius * Math.cos(currentAngle);
-
-    currentAngle += angle;
-
-    const x2 = center + radius * Math.sin(currentAngle);
-    const y2 = center - radius * Math.cos(currentAngle);
-
-    // Determine which arc to use (large or small)
-    const largeArcFlag = angle > Math.PI ? 1 : 0;
-
-    // Create SVG path
-    const path = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-
-    return {path, color: item.category.color};
-  });
-
   return (
-    <View style={[styles.pieChartContainer, {width: size, height: size}]}>
-      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <G>
-          {paths.map((segment, index) => (
-            <Path
-              key={index}
-              d={segment.path}
-              fill={segment.color}
-              stroke="white"
-              strokeWidth="1"
-            />
-          ))}
-          <Circle cx={center} cy={center} r={innerRadius} fill="white" />
-        </G>
-      </Svg>
+    <View style={[styles.container, {width: size, height: size}]}>
+      <Canvas style={{width: size, height: size}} ref={canvasRef} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  pieChartContainer: {
+  container: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emptyChart: {
+  emptyCircle: {
     borderRadius: 9999,
     borderWidth: 1,
     borderColor: '#ddd',
   },
 });
 
-export default PieChart;
+export default PieChartCanvas;
