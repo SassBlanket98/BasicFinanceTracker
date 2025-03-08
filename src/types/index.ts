@@ -66,5 +66,6 @@ export interface FinanceContextType {
   deleteTransaction: (id: string) => void;
   addCategory: (category: Omit<Category, 'id'>) => void;
   setBudget: (budget: Omit<Budget, 'id'>) => void;
+  deleteBudget: (id: string) => void;
   updateAccount: (accountId: string, amount: number) => void;
 }

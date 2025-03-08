@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Alert,
 } from 'react-native';
 import {useFinance} from '../../context/FinanceContext';
 import {useTransactions} from '../../hooks/useTransactions';
@@ -17,7 +18,7 @@ import {Budget, Category} from '../../types';
 import {formatCurrency} from '../../utils/calculations';
 
 const BudgetScreen = () => {
-  const {budgets, setBudget} = useFinance();
+  const {budgets, setBudget, deleteBudget} = useFinance();
   const {getBudgetProgress} = useTransactions();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -70,6 +71,26 @@ const BudgetScreen = () => {
     } else {
       setBudgetAmount('');
     }
+  };
+
+  const deleteBudgetHandler = (budgetId: string) => {
+    // Show confirmation dialog
+    Alert.alert(
+      'Delete Budget',
+      'Are you sure you want to delete this budget?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deleteBudget(budgetId),
+        },
+      ],
+      {cancelable: true},
+    );
   };
 
   return (
@@ -144,18 +165,26 @@ const BudgetScreen = () => {
                   />
                 </View>
 
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => {
-                    if (item.budget) {
-                      setSelectedCategory(item.budget.categoryId);
-                      setBudgetAmount(item.budget.amount.toString());
-                      setBudgetPeriod(item.budget.period);
-                      setModalVisible(true);
-                    }
-                  }}>
-                  <Text style={styles.editButtonText}>Edit</Text>
-                </TouchableOpacity>
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => {
+                      if (item.budget) {
+                        setSelectedCategory(item.budget.categoryId);
+                        setBudgetAmount(item.budget.amount.toString());
+                        setBudgetPeriod(item.budget.period);
+                        setModalVisible(true);
+                      }
+                    }}>
+                    <Text style={styles.editButtonText}>Edit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deleteBudgetHandler(item.budget.id)}>
+                    <Text style={styles.deleteButtonText}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
               </Card>
             );
           })
@@ -371,12 +400,24 @@ const styles = StyleSheet.create({
   progressBarExceeded: {
     backgroundColor: '#FF3B30',
   },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   editButton: {
     alignSelf: 'flex-end',
   },
   editButtonText: {
     fontSize: 14,
     color: '#007BFF',
+  },
+  deleteButton: {
+    alignSelf: 'flex-end',
+    marginTop: 8,
+  },
+  deleteButtonText: {
+    fontSize: 14,
+    color: '#FF3B30',
   },
   emptyContainer: {
     padding: 24,

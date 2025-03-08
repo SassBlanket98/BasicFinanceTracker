@@ -74,20 +74,28 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
         const storedBudgets = await AsyncStorage.getItem('budgets');
         const storedAccounts = await AsyncStorage.getItem('accounts');
 
-        if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
-        if (storedCategories) setCategories(JSON.parse(storedCategories));
-        else
+        if (storedTransactions) {
+          setTransactions(JSON.parse(storedTransactions));
+        }
+        if (storedCategories) {
+          setCategories(JSON.parse(storedCategories));
+        } else {
           await AsyncStorage.setItem(
             'categories',
             JSON.stringify(defaultCategories),
           );
-        if (storedBudgets) setBudgets(JSON.parse(storedBudgets));
-        if (storedAccounts) setAccounts(JSON.parse(storedAccounts));
-        else
+        }
+        if (storedBudgets) {
+          setBudgets(JSON.parse(storedBudgets));
+        }
+        if (storedAccounts) {
+          setAccounts(JSON.parse(storedAccounts));
+        } else {
           await AsyncStorage.setItem(
             'accounts',
             JSON.stringify([defaultAccount]),
           );
+        }
       } catch (error) {
         console.error('Error loading data', error);
       }
@@ -178,6 +186,10 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
     }
   };
 
+  const deleteBudget = (id: string) => {
+    setBudgets(prev => prev.filter(budget => budget.id !== id));
+  };
+
   const updateAccount = (accountId: string, amount: number) => {
     setAccounts(prev =>
       prev.map(account =>
@@ -200,6 +212,7 @@ export const FinanceProvider: React.FC<FinanceProviderProps> = ({children}) => {
         addCategory,
         setBudget,
         updateAccount,
+        deleteBudget, // include deleteBudget here
       }}>
       {children}
     </FinanceContext.Provider>
