@@ -1,97 +1,202 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# BasicFinanceTracker
 
-# Getting Started
+A personal finance management application built with React Native that helps you track income, expenses, budget, and view financial reports.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+### 🏦 Financial Dashboard
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Overview of current balance
+- Monthly income and expense summaries
+- Quick access to key financial metrics
+- Recent transaction history
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### 💰 Transaction Management
 
-```sh
-# Using npm
-npm start
+- Record income and expenses
+- Categorize transactions
+- Add descriptions and dates
+- Edit or delete existing transactions
 
-# OR using Yarn
-yarn start
+### 📊 Budget Planning
+
+- Set budgets by category (daily, weekly, or monthly)
+- Track spending against budgets
+- Visual progress indicators
+- Budget alerts for overspending
+
+### 📈 Financial Reports
+
+- Income and expense breakdown by category
+- Visual representations with interactive charts
+- Spending trends and patterns
+- Savings rate calculations
+
+### 🗂️ Category Management
+
+- Pre-defined expense and income categories
+- Customizable category colors
+- Spending analysis by category
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or newer)
+- [React Native development environment](https://reactnative.dev/docs/environment-setup)
+- For iOS: Xcode (Mac only)
+- For Android: Android Studio
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/BasicFinanceTracker.git
+   cd BasicFinanceTracker
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **For iOS (Mac only), install CocoaPods dependencies**
+   ```bash
+   npx pod-install
+   ```
+
+### Running the Application
+
+1. **Start Metro bundler**
+
+   ```bash
+   npm start
+   ```
+
+2. **Run on Android**
+
+   ```bash
+   npm run android
+   ```
+
+3. **Run on iOS (Mac only)**
+   ```bash
+   npm run ios
+   ```
+
+## How to Use
+
+### Adding a Transaction
+
+1. Tap the **+** button on the Dashboard screen
+2. Select transaction type (Income or Expense)
+3. Enter the amount
+4. Select a category
+5. Add a description (optional)
+6. Set the date
+7. Tap **Save**
+
+### Setting a Budget
+
+1. Navigate to the **Budget** tab
+2. Tap **+ Add Budget**
+3. Select a category
+4. Enter the budget amount
+5. Choose a time period (daily, weekly, or monthly)
+6. Tap **Save Budget**
+
+### Viewing Reports
+
+1. Navigate to the **Reports** tab
+2. Select a time period (day, week, or month)
+3. Switch between expense and income views
+4. Analyze the pie chart and category breakdown
+
+### Managing Transactions
+
+1. Go to the Dashboard and tap **History**
+2. Browse all transactions sorted by date
+3. Filter by transaction type if needed
+4. Tap on any transaction to edit or delete it
+
+## Project Structure
+
+```
+BasicFinanceTracker/
+├── android/                  # Android native code
+├── ios/                      # iOS native code
+├── src/
+│   ├── components/           # React components
+│   │   ├── common/           # Reusable UI components
+│   │   ├── charts/           # Chart components
+│   │   ├── navigation/       # Navigation components
+│   │   └── screens/          # Screen components
+│   ├── context/              # React Context for state management
+│   ├── hooks/                # Custom React hooks
+│   ├── types/                # TypeScript type definitions
+│   └── utils/                # Utility functions
+└── App.tsx                   # Application entry point
 ```
 
-## Step 2: Build and run your app
+## Financial Planning Tips
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- **Set Realistic Budgets**: Start by analyzing your past spending before setting budget limits.
+- **Regular Reviews**: Check your spending patterns weekly to stay on track.
+- **Emergency Fund**: Aim to save 3-6 months of expenses for emergencies.
+- **Categorize Properly**: Use specific categories to better understand your spending habits.
+- **Track Every Expense**: Even small expenses add up over time.
 
-### Android
+## Advanced Usage
 
-```sh
-# Using npm
-npm run android
+### Data Backup
 
-# OR using Yarn
-yarn android
-```
+The app stores data locally using AsyncStorage. To back up your data:
 
-### iOS
+1. Navigate to Settings (feature coming soon)
+2. Tap on "Export Data"
+3. Save the exported file to your preferred cloud storage
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+### Importing Transactions
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+For bulk transaction imports (feature coming soon):
 
-```sh
-bundle install
-```
+1. Prepare a CSV file with the required format
+2. Go to Settings
+3. Select "Import Transactions"
+4. Choose your CSV file
 
-Then, and every time you update your native dependencies, run:
+## Upcoming Features
 
-```sh
-bundle exec pod install
-```
+- 📱 Dark mode support
+- 🔄 CSV export/import
+- 🎯 Financial goals tracking
+- 📅 Recurring transactions
+- 📊 Advanced analytics
+- 🔐 Secure data with biometric authentication
+- ☁️ Cloud backup and sync
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Contributing
 
-```sh
-# Using npm
-npm run ios
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-# OR using Yarn
-yarn ios
-```
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## License
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Step 3: Modify your app
+## Acknowledgments
 
-Now that you have successfully run the app, let's make changes!
+- React Native Team
+- All contributors who have helped this project grow
+- Financial planning experts who inspired the feature set
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+---
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Made with ❤️ for better financial management
