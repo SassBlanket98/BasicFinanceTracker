@@ -8,6 +8,8 @@ import {
   FlatList,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../types/navigation';
 import {useFinance} from '../../context/FinanceContext';
 import {useTransactions} from '../../hooks/useTransactions';
 import Card from '../common/Card';
@@ -39,7 +41,7 @@ interface BudgetProgressItem {
 }
 
 const Dashboard = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   useFinance();
   const {
     recentTransactions,

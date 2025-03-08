@@ -11,11 +11,11 @@ import TransactionHistory from '../screens/TransactionHistory';
 import BudgetScreen from '../screens/BudgetScreen';
 import ReportScreen from '../screens/ReportScreen';
 
-// Create navigators
+// Create navigators with correct typing
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Simple icon component (you would normally use a library like react-native-vector-icons)
+// Simple icon component
 interface TabIconProps {
   name: string;
   focused: boolean;
@@ -31,7 +31,7 @@ const TabIcon: React.FC<TabIconProps> = ({name, focused}) => {
   );
 };
 
-// Stack navigator for main screens with transaction-related screens
+// Stack navigator for main screens
 const HomeStack = () => {
   return (
     <Stack.Navigator
