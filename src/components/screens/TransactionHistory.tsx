@@ -1,21 +1,38 @@
-export default TransactionHistory;import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   SectionList,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useFinance } from '../../context/FinanceContext';
-import { useTransactions } from '../../hooks/useTransactions';
-import { formatCurrency } from '../../utils/calculations';
-import Card from '../common/Card';
+import {useNavigation} from '@react-navigation/native';
+import {useTransactions} from '../../hooks/useTransactions';
+import {formatCurrency} from '../../utils/calculations';
+import {Transaction} from '../../types';
+
+// Define an interface for the section data
+interface TransactionSection {
+  date: string;
+  dayTotal: number;
+  data: Transaction[];
+}
+
+// Define the type for renderItem
+interface RenderItemProps {
+  item: Transaction;
+  index: number;
+  section: TransactionSection;
+}
+
+// Define the type for renderSectionHeader
+interface RenderSectionProps {
+  section: TransactionSection;
+}
 
 const TransactionHistory = () => {
   const navigation = useNavigation();
-  const { getTransactionsByDate, getCategoryById } = useTransactions();
+  const {getTransactionsByDate, getCategoryById} = useTransactions();
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
 
   // Get transactions grouped by date
@@ -28,9 +45,11 @@ const TransactionHistory = () => {
       const filteredTransactions =
         filter === 'all'
           ? transactions
-          : transactions.filter((t) => t.type === filter);
+          : transactions.filter(t => t.type === filter);
 
-      if (filteredTransactions.length === 0) return null;
+      if (filteredTransactions.length === 0) {
+        return null;
+      }
 
       // Calculate total for the day
       const dayTotal = filteredTransactions.reduce((sum, t) => {
@@ -43,28 +62,27 @@ const TransactionHistory = () => {
         data: filteredTransactions,
       };
     })
-    .filter(Boolean)
+    .filter((section): section is TransactionSection => section !== null)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const handleTransactionPress = (transaction) => {
+  const handleTransactionPress = (transaction: Transaction) => {
     // @ts-ignore - Navigation type issues
-    navigation.navigate('AddTransaction', { transaction });
+    navigation.navigate('AddTransaction', {transaction});
   };
 
-  const renderTransactionItem = ({ item }) => {
+  const renderTransactionItem = ({item}: RenderItemProps) => {
     const category = getCategoryById(item.category);
     const isIncome = item.type === 'income';
 
     return (
       <TouchableOpacity
         style={styles.transactionItem}
-        onPress={() => handleTransactionPress(item)}
-      >
+        onPress={() => handleTransactionPress(item)}>
         <View style={styles.transactionLeft}>
           <View
             style={[
               styles.categoryDot,
-              { backgroundColor: category?.color || '#CCCCCC' },
+              {backgroundColor: category?.color || '#CCCCCC'},
             ]}
           />
           <View>
@@ -78,15 +96,14 @@ const TransactionHistory = () => {
           style={[
             styles.transactionAmount,
             isIncome ? styles.incomeText : styles.expenseText,
-          ]}
-        >
+          ]}>
           {isIncome ? '+' : '-'} ${formatCurrency(item.amount)}
         </Text>
       </TouchableOpacity>
     );
   };
 
-  const renderSectionHeader = ({ section }) => (
+  const renderSectionHeader = ({section}: RenderSectionProps) => (
     <View style={styles.sectionHeader}>
       <View style={styles.dateContainer}>
         <Text style={styles.dateText}>
@@ -102,8 +119,7 @@ const TransactionHistory = () => {
         style={[
           styles.dayTotalText,
           section.dayTotal >= 0 ? styles.incomeText : styles.expenseText,
-        ]}
-      >
+        ]}>
         {section.dayTotal >= 0 ? '+' : ''} ${formatCurrency(section.dayTotal)}
       </Text>
     </View>
@@ -118,15 +134,12 @@ const TransactionHistory = () => {
       <View style={styles.filterContainer}>
         <TouchableOpacity
           style={[styles.filterButton, filter === 'all' && styles.activeFilter]}
-          onPress={() => setFilter('all')}
-        >
+          onPress={() => setFilter('all')}>
           <Text
             style={[
               styles.filterText,
-              filter === 'all' && styles.activeFilterText
-              Text,
-            ]}
-          >
+              filter === 'all' && styles.activeFilterText,
+            ]}>
             All
           </Text>
         </TouchableOpacity>
@@ -135,14 +148,12 @@ const TransactionHistory = () => {
             styles.filterButton,
             filter === 'income' && styles.activeFilter,
           ]}
-          onPress={() => setFilter('income')}
-        >
+          onPress={() => setFilter('income')}>
           <Text
             style={[
               styles.filterText,
               filter === 'income' && styles.activeFilterText,
-            ]}
-          >
+            ]}>
             Income
           </Text>
         </TouchableOpacity>
@@ -151,23 +162,21 @@ const TransactionHistory = () => {
             styles.filterButton,
             filter === 'expense' && styles.activeFilter,
           ]}
-          onPress={() => setFilter('expense')}
-        >
+          onPress={() => setFilter('expense')}>
           <Text
             style={[
               styles.filterText,
               filter === 'expense' && styles.activeFilterText,
-            ]}
-          >
+            ]}>
             Expenses
           </Text>
         </TouchableOpacity>
       </View>
 
       {sections.length > 0 ? (
-        <SectionList
+        <SectionList<Transaction, TransactionSection>
           sections={sections}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           renderItem={renderTransactionItem}
           renderSectionHeader={renderSectionHeader}
           stickySectionHeadersEnabled={true}
@@ -181,8 +190,7 @@ const TransactionHistory = () => {
             onPress={() => {
               // @ts-ignore - Navigation type issues
               navigation.navigate('AddTransaction');
-            }}
-          >
+            }}>
             <Text style={styles.addButtonText}>Add Transaction</Text>
           </TouchableOpacity>
         </View>
@@ -321,3 +329,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default TransactionHistory;
