@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import {useTransactions} from '../../hooks/useTransactions';
 import Card from '../common/Card';
-import LineChart from '../charts/LineChart';
 import {formatCurrency} from '../../utils/calculations';
 import {TimePeriod, TransactionType, CategorySpending} from '../../types';
+import DonutChart from '../charts/DonutChart';
 
 const ReportScreen: React.FC = () => {
   const [period, setPeriod] = useState<TimePeriod>('monthly');
@@ -131,9 +131,13 @@ const ReportScreen: React.FC = () => {
               {tab === 'expense' ? 'Spending' : 'Income'} by Category
             </Text>
 
-            {/* Line Chart visualization */}
+            {/* Replace Line Chart with Donut Chart */}
             <View style={styles.chartContainer}>
-              <LineChart data={filteredDistribution} />
+              <DonutChart
+                data={filteredDistribution}
+                size={220}
+                thickness={40}
+              />
             </View>
 
             <View style={styles.legendContainer}>
@@ -328,7 +332,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chartContainer: {
-    marginVertical: 8,
+    marginVertical: 16,
     alignItems: 'center',
   },
   legendContainer: {
