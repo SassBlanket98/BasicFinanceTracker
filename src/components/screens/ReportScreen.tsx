@@ -8,68 +8,21 @@ import {
 } from 'react-native';
 import {useTransactions} from '../../hooks/useTransactions';
 import Card from '../common/Card';
+import LineChart from '../charts/LineChart';
 import {formatCurrency} from '../../utils/calculations';
 import {TimePeriod, TransactionType, CategorySpending} from '../../types';
-
-// PieChart component with proper TypeScript annotations
-const PieChart: React.FC<{data: CategorySpending[]; size?: number}> = ({
-  data,
-  size = 200,
-}) => {
-  const total = data.reduce((sum, item) => sum + item.amount, 0);
-  let startAngle = 0;
-
-  return (
-    <View style={[styles.pieChartContainer, {width: size, height: size}]}>
-      <View style={[styles.pieChart, {width: size, height: size}]}>
-        {data.map((item, index) => {
-          const percentage = item.amount / total;
-          const angle = percentage * 360;
-          const endAngle = startAngle + angle;
-
-          // Create a slice
-          const slice = {
-            position: 'absolute' as const,
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            overflow: 'hidden' as const,
-          };
-
-          const coverStyle = {
-            position: 'absolute' as const,
-            top: 0,
-            left: 0,
-            width: size,
-            height: size,
-            backgroundColor: item.category.color,
-          };
-
-          // Create the slice
-          const result = (
-            <View key={index} style={slice}>
-              <View style={coverStyle} />
-            </View>
-          );
-
-          startAngle = endAngle;
-          return result;
-        })}
-      </View>
-      <View style={styles.pieChartCenter} />
-    </View>
-  );
-};
 
 const ReportScreen: React.FC = () => {
   const [period, setPeriod] = useState<TimePeriod>('monthly');
   const [tab, setTab] = useState<TransactionType>('expense');
 
-  const {getIncome, getExpenses, getCategorySpending} = useTransactions();
+  const {getIncome, getExpenses, getCategorySpending, getSpendingTrend} =
+    useTransactions();
 
   // Get data based on selected period and tab
   const totalIncome = getIncome(period);
   const totalExpenses = getExpenses(period);
+  const spendingTrend = getSpendingTrend(period);
 
   // Get category distribution
   const categoryDistribution = getCategorySpending(tab, period);
@@ -78,12 +31,6 @@ const ReportScreen: React.FC = () => {
   const filteredDistribution = categoryDistribution.filter(
     (item: CategorySpending) => item.amount > 0,
   );
-
-  // Log the filtered distribution data
-  console.log('Chart Data:', filteredDistribution);
-
-  // Then make sure your PieChart component receives this data:
-  <PieChart data={filteredDistribution} size={180} />;
 
   const renderPeriodButton = (buttonPeriod: TimePeriod, label: string) => (
     <TouchableOpacity
@@ -158,13 +105,14 @@ const ReportScreen: React.FC = () => {
             </Text>
           </View>
           <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Savings Rate</Text>
-            <Text style={styles.savingsText}>
-              {totalIncome > 0
-                ? `${Math.round(
-                    ((totalIncome - totalExpenses) / totalIncome) * 100,
-                  )}%`
-                : '0%'}
+            <Text style={styles.summaryLabel}>Trend</Text>
+            <Text
+              style={[
+                styles.trendText,
+                spendingTrend <= 0 ? styles.positiveText : styles.negativeText,
+              ]}>
+              {spendingTrend <= 0 ? '↓' : '↑'}{' '}
+              {Math.abs(Math.round(spendingTrend))}%
             </Text>
           </View>
         </View>
@@ -179,8 +127,13 @@ const ReportScreen: React.FC = () => {
 
         {filteredDistribution.length > 0 ? (
           <View style={styles.chartSection}>
+            <Text style={styles.chartTitle}>
+              {tab === 'expense' ? 'Spending' : 'Income'} by Category
+            </Text>
+
+            {/* Line Chart visualization */}
             <View style={styles.chartContainer}>
-              <PieChart data={filteredDistribution} size={180} />
+              <LineChart data={filteredDistribution} />
             </View>
 
             <View style={styles.legendContainer}>
@@ -214,6 +167,48 @@ const ReportScreen: React.FC = () => {
             </Text>
           </View>
         )}
+      </Card>
+
+      {/* Savings Analysis Card */}
+      <Card title="Savings Analysis" style={styles.savingsCard}>
+        <View style={styles.savingsRateContainer}>
+          <Text style={styles.savingsRateLabel}>Savings Rate</Text>
+          <Text style={styles.savingsRateValue}>
+            {totalIncome > 0
+              ? `${Math.round(
+                  ((totalIncome - totalExpenses) / totalIncome) * 100,
+                )}%`
+              : '0%'}
+          </Text>
+          <View style={styles.savingsProgressContainer}>
+            <View
+              style={[
+                styles.savingsProgress,
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  width:
+                    totalIncome > 0
+                      ? `${Math.min(
+                          Math.round(
+                            ((totalIncome - totalExpenses) / totalIncome) * 100,
+                          ),
+                          100,
+                        )}%`
+                      : '0%',
+                },
+              ]}
+            />
+          </View>
+          <Text style={styles.savingsDescription}>
+            {totalIncome > 0 &&
+            (totalIncome - totalExpenses) / totalIncome >= 0.2
+              ? "Great job! You're saving more than the recommended 20% of your income."
+              : totalIncome > 0 &&
+                (totalIncome - totalExpenses) / totalIncome > 0
+              ? "You're saving, but aim for at least 20% of your income for financial security."
+              : 'Try to reduce expenses to build savings for financial security.'}
+          </Text>
+        </View>
       </Card>
     </ScrollView>
   );
@@ -287,10 +282,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FF3B30',
   },
-  savingsText: {
+  trendText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007BFF',
+  },
+  positiveText: {
+    color: '#4CD964',
+  },
+  negativeText: {
+    color: '#FF3B30',
   },
   tabSelector: {
     flexDirection: 'row',
@@ -318,31 +318,22 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   chartSection: {
-    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   chartContainer: {
-    marginVertical: 16,
-  },
-  pieChartContainer: {
-    position: 'relative',
+    marginVertical: 8,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pieChart: {
-    position: 'relative',
-    borderRadius: 100,
-    overflow: 'hidden',
-  },
-  pieChartCenter: {
-    position: 'absolute',
-    width: '70%',
-    height: '70%',
-    borderRadius: 100,
-    backgroundColor: '#FFFFFF',
   },
   legendContainer: {
     width: '100%',
-    marginTop: 16,
+    marginTop: 24,
   },
   legendItem: {
     flexDirection: 'row',
@@ -379,6 +370,43 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     color: '#999',
+  },
+  savingsCard: {
+    marginHorizontal: 16,
+    marginBottom: 24,
+  },
+  savingsRateContainer: {
+    alignItems: 'center',
+  },
+  savingsRateLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  savingsRateValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#007BFF',
+    marginBottom: 8,
+  },
+  savingsProgressContainer: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#E5E5E5',
+    borderRadius: 4,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  savingsProgress: {
+    height: '100%',
+    backgroundColor: '#007BFF',
+    borderRadius: 4,
+  },
+  savingsDescription: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 8,
   },
 });
 
