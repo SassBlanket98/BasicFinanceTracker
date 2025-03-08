@@ -11,7 +11,7 @@ import {
 import {useFinance} from '../../context/FinanceContext';
 import {useTransactions} from '../../hooks/useTransactions';
 import Card from '../common/Card';
-import Input from '../common/Input';
+import Input from '../common/input';
 import Button from '../common/Button';
 import {Budget, Category} from '../../types';
 import {formatCurrency} from '../../utils/calculations';

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useFinance} from '../../context/FinanceContext';
-import Input from '../common/Input';
+import Input from '../common/input';
 import Button from '../common/Button';
 import CategoryPicker from '../common/CategoryPicker';
 import {Transaction, Category, TransactionType} from '../../types';
