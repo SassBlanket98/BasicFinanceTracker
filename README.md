@@ -140,33 +140,6 @@ BasicFinanceTracker/
 └── App.tsx                   # Application entry point
 ```
 
-## Financial Planning Tips
-
-- **Set Realistic Budgets**: Start by analyzing your past spending before setting budget limits.
-- **Regular Reviews**: Check your spending patterns weekly to stay on track.
-- **Emergency Fund**: Aim to save 3-6 months of expenses for emergencies.
-- **Categorize Properly**: Use specific categories to better understand your spending habits.
-- **Track Every Expense**: Even small expenses add up over time.
-
-## Advanced Usage
-
-### Data Backup
-
-The app stores data locally using AsyncStorage. To back up your data:
-
-1. Navigate to Settings (feature coming soon)
-2. Tap on "Export Data"
-3. Save the exported file to your preferred cloud storage
-
-### Importing Transactions
-
-For bulk transaction imports (feature coming soon):
-
-1. Prepare a CSV file with the required format
-2. Go to Settings
-3. Select "Import Transactions"
-4. Choose your CSV file
-
 ## Upcoming Features
 
 - 📱 Dark mode support
@@ -194,8 +167,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - React Native Team
-- All contributors who have helped this project grow
-- Financial planning experts who inspired the feature set
+- Claude
+- Copilot
+- StackOverflow
+- Google
 
 ---
 
