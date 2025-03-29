@@ -61,7 +61,6 @@ const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
     }
 
     // Get current date and calculate date ranges based on period
-    const now = new Date();
     const timePoints: Date[] = [];
     const labels: string[] = [];
 
@@ -73,7 +72,7 @@ const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
         const date = new Date();
 
         // Go back i weeks from the current date
-        date.setDate(date.getDate() - (i * 7));
+        date.setDate(date.getDate() - i * 7);
 
         // Find the Sunday (or Monday) of this week
         const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
@@ -92,11 +91,21 @@ const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({
         timePoints.push(weekStart);
 
         // Create a week label like "Mar 15-21"
-        const startLabel = weekStart.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
-        const endLabel = weekEnd.toLocaleDateString(undefined, {day: 'numeric'});
+        const startLabel = weekStart.toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+        });
+        const endLabel = weekEnd.toLocaleDateString(undefined, {
+          day: 'numeric',
+        });
         labels.push(`${startLabel}-${endLabel}`);
 
-        console.log(`Week ${4-i}:`, weekStart.toISOString(), 'to', weekEnd.toISOString());
+        console.log(
+          `Week ${4 - i}:`,
+          weekStart.toISOString(),
+          'to',
+          weekEnd.toISOString(),
+        );
       }
     }
 
