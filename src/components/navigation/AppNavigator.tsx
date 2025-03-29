@@ -10,6 +10,7 @@ import AddTransaction from '../screens/AddTransaction';
 import TransactionHistory from '../screens/TransactionHistory';
 import BudgetScreen from '../screens/BudgetScreen';
 import ReportScreen from '../screens/ReportScreen';
+import MonthlySummary from '../screens/MonthlySummary';
 
 // Create navigators with correct typing
 const Tab = createBottomTabNavigator();
@@ -31,7 +32,7 @@ const TabIcon: React.FC<TabIconProps> = ({name, focused}) => {
   );
 };
 
-// Stack navigator for main screens
+// Stack navigator for main screens - defined OUTSIDE of AppNavigator
 const HomeStack = () => {
   return (
     <Stack.Navigator
@@ -41,6 +42,19 @@ const HomeStack = () => {
       <Stack.Screen name="DashboardScreen" component={Dashboard} />
       <Stack.Screen name="AddTransaction" component={AddTransaction} />
       <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
+    </Stack.Navigator>
+  );
+};
+
+// Stack navigator for reports - defined OUTSIDE of AppNavigator
+const ReportStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="ReportScreen" component={ReportScreen} />
+      <Stack.Screen name="MonthlySummary" component={MonthlySummary} />
     </Stack.Navigator>
   );
 };
@@ -64,6 +78,7 @@ const AppNavigator = () => {
           name="Home"
           component={HomeStack}
           options={{
+            // eslint-disable-next-line react/no-unstable-nested-components
             tabBarIcon: ({focused}) => <TabIcon name="💰" focused={focused} />,
             tabBarLabel: 'Dashboard',
           }}
@@ -72,14 +87,16 @@ const AppNavigator = () => {
           name="Budget"
           component={BudgetScreen}
           options={{
+            // eslint-disable-next-line react/no-unstable-nested-components
             tabBarIcon: ({focused}) => <TabIcon name="📊" focused={focused} />,
             tabBarLabel: 'Budget',
           }}
         />
         <Tab.Screen
           name="Reports"
-          component={ReportScreen}
+          component={ReportStack}
           options={{
+            // eslint-disable-next-line react/no-unstable-nested-components
             tabBarIcon: ({focused}) => <TabIcon name="📈" focused={focused} />,
             tabBarLabel: 'Reports',
           }}

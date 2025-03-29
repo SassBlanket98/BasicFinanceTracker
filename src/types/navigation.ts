@@ -10,6 +10,8 @@ export type RootStackParamList = {
   TransactionHistory: undefined;
   Budget: undefined;
   Reports: undefined;
+  ReportScreen: undefined;
+  MonthlySummary: undefined;
 };
 
 // Navigation prop types

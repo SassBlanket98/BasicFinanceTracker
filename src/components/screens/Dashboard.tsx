@@ -50,6 +50,7 @@ const Dashboard = () => {
     getCurrentBalance,
     getCategoryById,
     getBudgetProgress,
+    getTopSpendingCategories,
   } = useTransactions();
 
   // Calculate current month's data
@@ -57,6 +58,9 @@ const Dashboard = () => {
   const monthlyExpenses = getExpenses('monthly');
   const currentBalance = getCurrentBalance();
   const budgetProgress = getBudgetProgress() as BudgetProgressItem[];
+
+  // Get top spending categories
+  const topCategories = getTopSpendingCategories('monthly', 3);
 
   const navigateToAddTransaction = () => {
     // @ts-ignore - Navigation type issues
@@ -76,6 +80,11 @@ const Dashboard = () => {
   const navigateToReports = () => {
     // @ts-ignore - Navigation type issues
     navigation.navigate('Reports');
+  };
+
+  const navigateToMonthlySummary = () => {
+    // @ts-ignore - Navigation type issues
+    navigation.navigate('MonthlySummary');
   };
 
   // Render a transaction item with proper type safety
@@ -175,6 +184,40 @@ const Dashboard = () => {
           <Text style={styles.actionText}>Reports</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Monthly Summary Button */}
+      <TouchableOpacity
+        style={styles.summaryButton}
+        onPress={navigateToMonthlySummary}>
+        <Text style={styles.summaryButtonText}>💰 View Monthly Summary</Text>
+      </TouchableOpacity>
+
+      {/* Top Spending Categories */}
+      {topCategories.length > 0 && (
+        <Card title="Top Spending Categories">
+          {topCategories.map((item, index) => (
+            <View key={index} style={styles.topCategoryItem}>
+              <View
+                style={[
+                  styles.categoryDot,
+                  {backgroundColor: item.category.color},
+                ]}
+              />
+              <View style={styles.categoryInfo}>
+                <Text style={styles.categoryName}>{item.category.name}</Text>
+                <Text style={styles.categoryAmount}>
+                  R{formatCurrency(item.amount)}
+                </Text>
+              </View>
+              <View style={styles.percentageContainer}>
+                <Text style={styles.percentageText}>
+                  {item.percentage.toFixed(1)}%
+                </Text>
+              </View>
+            </View>
+          ))}
+        </Card>
+      )}
 
       {/* Budget Progress */}
       {budgetProgress.length > 0 && (
@@ -326,7 +369,7 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   actionButton: {
     flex: 1,
@@ -341,6 +384,50 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#007BFF',
+  },
+  summaryButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 24,
+    elevation: 3,
+  },
+  summaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  topCategoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  categoryInfo: {
+    flex: 1,
+  },
+  categoryName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+  },
+  categoryAmount: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  percentageContainer: {
+    backgroundColor: '#F0F0F0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  percentageText: {
+    fontSize: 12,
+    color: '#333',
+    fontWeight: '500',
   },
   budgetItem: {
     marginBottom: 16,

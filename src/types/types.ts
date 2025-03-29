@@ -14,8 +14,8 @@ export interface Transaction {
   id: string;
   amount: number;
   description: string;
-  date: string;
-  category: string; // References Category id
+  date: string; // References Category id
+  category: string;
   type: TransactionType;
 }
 
@@ -56,15 +56,6 @@ export interface CategorySpending {
   percentage: number;
 }
 
-// Budget progress interface
-export interface BudgetProgress {
-  budget: Budget;
-  category: Category;
-  spent: number;
-  remaining: number;
-  percentage: number;
-}
-
 // Component Props interfaces
 export interface PieChartProps {
   data: CategorySpending[];
@@ -73,6 +64,43 @@ export interface PieChartProps {
 
 export interface ReportScreenProps {
   // Add any props needed for the ReportScreen component
+}
+
+// New types for enhanced visualizations
+export interface SpendingTrendChartProps {
+  period?: 'weekly' | 'monthly' | '3months' | '6months' | 'yearly';
+  selectedCategories?: string[]; // Array of category IDs
+}
+
+export interface IncomeExpenseChartProps {
+  timeFrame?: 'week' | 'month' | 'year';
+  showNet?: boolean; // Option to show net (income - expense)
+}
+
+export interface TrendDataPoint {
+  x: number;
+  y: number;
+  value: number;
+}
+
+export interface TrendCategoryData {
+  label: string;
+  color: string;
+  data: TrendDataPoint[];
+}
+
+export interface IncomeExpenseData {
+  label: string;
+  income: number;
+  expense: number;
+  net: number;
+}
+
+// Monthly summary specific types
+export interface MonthlyInsight {
+  type: 'alert' | 'info' | 'success';
+  title: string;
+  message: string;
 }
 
 export interface FinanceContextType {
@@ -85,4 +113,5 @@ export interface FinanceContextType {
   addCategory: (category: Omit<Category, 'id'>) => void;
   setBudget: (budget: Omit<Budget, 'id'>) => void;
   updateAccount: (accountId: string, amount: number) => void;
+  deleteBudget: (id: string) => void;
 }

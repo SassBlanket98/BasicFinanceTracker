@@ -48,9 +48,10 @@ export const useTransactions = () => {
   const filterByPeriod = useCallback(
     (
       period: TimePeriod,
+      startDate?: Date,
       transactionsToFilter: Transaction[] = transactions,
     ) => {
-      const now = new Date();
+      const now = startDate || new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
       return transactionsToFilter.filter(transaction => {
@@ -65,8 +66,13 @@ export const useTransactions = () => {
             );
           case 'weekly':
             const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay());
-            return transactionDate >= weekStart;
+            weekStart.setDate(today.getDate() - today.getDay()); // Go to Sunday
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6); // Go to Saturday
+            weekEnd.setHours(23, 59, 59, 999);
+
+            return transactionDate >= weekStart && transactionDate <= weekEnd;
           case 'monthly':
             return (
               transactionDate.getMonth() === today.getMonth() &&
@@ -82,8 +88,8 @@ export const useTransactions = () => {
 
   // Get total income for a period
   const getIncome = useCallback(
-    (period: TimePeriod): number => {
-      return filterByPeriod(period)
+    (period: TimePeriod, startDate?: Date): number => {
+      return filterByPeriod(period, startDate)
         .filter(transaction => transaction.type === 'income')
         .reduce((sum, transaction) => sum + transaction.amount, 0);
     },
@@ -92,8 +98,8 @@ export const useTransactions = () => {
 
   // Get total expenses for a period
   const getExpenses = useCallback(
-    (period: TimePeriod): number => {
-      return filterByPeriod(period)
+    (period: TimePeriod, startDate?: Date): number => {
+      return filterByPeriod(period, startDate)
         .filter(transaction => transaction.type === 'expense')
         .reduce((sum, transaction) => sum + transaction.amount, 0);
     },
@@ -102,8 +108,12 @@ export const useTransactions = () => {
 
   // Get spending by category with memoization
   const getCategorySpending = useCallback(
-    (type: TransactionType, period: TimePeriod): CategorySpending[] => {
-      const filteredTransactions = filterByPeriod(period).filter(
+    (
+      type: TransactionType,
+      period: TimePeriod,
+      startDate?: Date,
+    ): CategorySpending[] => {
+      const filteredTransactions = filterByPeriod(period, startDate).filter(
         transaction => transaction.type === type,
       );
 
@@ -248,6 +258,37 @@ export const useTransactions = () => {
     [filterByPeriod],
   );
 
+  // Get transactions for a specific date range
+  const getTransactionsByDateRange = useCallback(
+    (startDate: Date, endDate: Date): Transaction[] => {
+      return transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate >= startDate && transactionDate <= endDate;
+      });
+    },
+    [transactions],
+  );
+
+  // Get transactions grouped by month
+  const getTransactionsByMonth = useCallback((): Record<
+    string,
+    Transaction[]
+  > => {
+    return transactions.reduce((groups, transaction) => {
+      const date = new Date(transaction.date);
+      const monthKey = `${date.getFullYear()}-${String(
+        date.getMonth() + 1,
+      ).padStart(2, '0')}`;
+
+      if (!groups[monthKey]) {
+        groups[monthKey] = [];
+      }
+
+      groups[monthKey].push(transaction);
+      return groups;
+    }, {} as Record<string, Transaction[]>);
+  }, [transactions]);
+
   // Calculate spending trends - compare current period to previous period
   const getSpendingTrend = useCallback(
     (period: TimePeriod): number => {
@@ -311,6 +352,113 @@ export const useTransactions = () => {
     [transactions, filterByPeriod],
   );
 
+  // Get category spending trend over time
+  const getCategorySpendingTrend = useCallback(
+    (
+      categoryId: string,
+      period: 'weekly' | 'monthly' | '3months' | '6months' | 'yearly',
+    ): {
+      labels: string[];
+      data: number[];
+    } => {
+      const now = new Date();
+      const timePoints: Date[] = [];
+      const labels: string[] = [];
+
+      // Create time points based on the selected period
+      if (period === 'weekly') {
+        // Last 7 days
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(now.getDate() - i);
+          timePoints.push(date);
+          labels.push(date.toLocaleDateString(undefined, {weekday: 'short'}));
+        }
+      } else if (period === 'monthly') {
+        // Last 4 weeks
+        for (let i = 3; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(now.getDate() - i * 7);
+          timePoints.push(date);
+          labels.push(`Week ${4 - i}`);
+        }
+      } else if (period === '3months') {
+        // Last 3 months
+        for (let i = 2; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(now.getMonth() - i);
+          timePoints.push(date);
+          labels.push(date.toLocaleDateString(undefined, {month: 'short'}));
+        }
+      } else if (period === '6months') {
+        // Last 6 months
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(now.getMonth() - i);
+          timePoints.push(date);
+          labels.push(date.toLocaleDateString(undefined, {month: 'short'}));
+        }
+      } else if (period === 'yearly') {
+        // Last 12 months
+        for (let i = 11; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(now.getMonth() - i);
+          timePoints.push(date);
+          labels.push(date.toLocaleDateString(undefined, {month: 'short'}));
+        }
+      }
+
+      // Calculate spending for each time point
+      const data = timePoints.map(date => {
+        // Calculate start and end date for this time point
+        let startDate: number | Date, endDate: number | Date;
+
+        if (period === 'weekly') {
+          // Daily data points
+          startDate = new Date(date);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(date);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (period === 'monthly') {
+          // Weekly data points
+          startDate = new Date(date);
+          startDate.setDate(date.getDate() - 7);
+          endDate = new Date(date);
+        } else {
+          // Monthly data points
+          startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+          endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        }
+
+        // Filter transactions for this category and time period
+        const periodTransactions = transactions.filter(t => {
+          const transactionDate = new Date(t.date);
+          return (
+            t.category === categoryId &&
+            t.type === 'expense' &&
+            transactionDate >= startDate &&
+            transactionDate <= endDate
+          );
+        });
+
+        // Sum the amounts
+        return periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+      });
+
+      return {labels, data};
+    },
+    [transactions],
+  );
+
+  // Get top spending categories
+  const getTopSpendingCategories = useCallback(
+    (period: TimePeriod = 'monthly', limit: number = 5): CategorySpending[] => {
+      const categoryData = getCategorySpending('expense', period);
+      return categoryData.slice(0, limit);
+    },
+    [getCategorySpending],
+  );
+
   // Get forecast for upcoming expenses
   const getForecastExpenses = useCallback(
     (daysAhead: number = 30): number => {
@@ -354,6 +502,95 @@ export const useTransactions = () => {
     [getIncome, getExpenses],
   );
 
+  // Get income vs expense comparison data
+  const getIncomeExpenseComparison = useCallback(
+    (
+      timeFrame: 'week' | 'month' | 'year',
+    ): Array<{
+      label: string;
+      income: number;
+      expense: number;
+      net: number;
+    }> => {
+      const now = new Date();
+      const data: any[] = [];
+
+      if (timeFrame === 'week') {
+        // Last 7 days
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(now.getDate() - i);
+
+          // For a specific day
+          const period: TimePeriod = 'daily';
+          const dayLabel = date.toLocaleDateString(undefined, {
+            weekday: 'short',
+          });
+
+          // Get income and expense for this day
+          const income = getIncome(period, date);
+          const expense = getExpenses(period, date);
+          const net = income - expense;
+
+          data.push({
+            label: dayLabel,
+            income,
+            expense,
+            net,
+          });
+        }
+      } else if (timeFrame === 'month') {
+        // Last 4 weeks
+        for (let i = 3; i >= 0; i--) {
+          const weekStart = new Date();
+          weekStart.setDate(now.getDate() - i * 7 - now.getDay());
+
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+
+          const weekLabel = `Week ${4 - i}`;
+
+          // Get income and expense for this week
+          const income = getIncome('weekly', weekStart);
+          const expense = getExpenses('weekly', weekStart);
+          const net = income - expense;
+
+          data.push({
+            label: weekLabel,
+            income,
+            expense,
+            net,
+          });
+        }
+      } else if (timeFrame === 'year') {
+        // Last 6 months
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(now.getMonth() - i);
+
+          const monthLabel = date.toLocaleDateString(undefined, {
+            month: 'short',
+          });
+
+          // Get income and expense for this month
+          const income = getIncome('monthly', date);
+          const expense = getExpenses('monthly', date);
+          const net = income - expense;
+
+          data.push({
+            label: monthLabel,
+            income,
+            expense,
+            net,
+          });
+        }
+      }
+
+      return data;
+    },
+    [getIncome, getExpenses],
+  );
+
   // Get categories that have no transactions (unused categories)
   const getUnusedCategories = useCallback((): Category[] => {
     const usedCategoryIds = new Set(transactions.map(t => t.category));
@@ -361,6 +598,7 @@ export const useTransactions = () => {
   }, [transactions, categories]);
 
   return {
+    transactions,
     getIncome,
     getExpenses,
     getCategorySpending,
@@ -368,12 +606,17 @@ export const useTransactions = () => {
     getTransactionsByDate,
     getTransactionsByPage,
     getTransactionsByCategory,
+    getTransactionsByDateRange,
+    getTransactionsByMonth,
     recentTransactions,
     getCurrentBalance,
     getBudgetProgress,
     getSpendingTrend,
+    getCategorySpendingTrend,
+    getTopSpendingCategories,
     getForecastExpenses,
     getSavingsRate,
+    getIncomeExpenseComparison,
     getUnusedCategories,
   };
 };
