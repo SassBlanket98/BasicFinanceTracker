@@ -55,14 +55,14 @@ const IncomeExpenseChart: React.FC<IncomeExpenseChartProps> = ({
         const dayOfWeek = weekStart.getDay();
 
         // Calculate the date of Sunday this week, then go back i weeks
-        weekStart.setDate(weekStart.getDate() - dayOfWeek - (i * 7));
+        weekStart.setDate(weekStart.getDate() - dayOfWeek - i * 7);
         weekStart.setHours(0, 0, 0, 0);
 
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
         weekEnd.setHours(23, 59, 59, 999);
 
-        const weekLabel = `Week ${4-i}`;
+        const weekLabel = `Week ${4 - i}`;
 
         // Instead of using 'daily' period with a specific date,
         // filter transactions explicitly for this week
@@ -72,12 +72,12 @@ const IncomeExpenseChart: React.FC<IncomeExpenseChartProps> = ({
         });
 
         const income = weekTransactions
-          .filter((t: { type: string; }) => t.type === 'income')
-          .reduce((sum: any, t: { amount: any; }) => sum + t.amount, 0);
+          .filter((t: {type: string}) => t.type === 'income')
+          .reduce((sum: any, t: {amount: any}) => sum + t.amount, 0);
 
         const expense = weekTransactions
-          .filter((t: { type: string; }) => t.type === 'expense')
-          .reduce((sum: any, t: { amount: any; }) => sum + t.amount, 0);
+          .filter((t: {type: string}) => t.type === 'expense')
+          .reduce((sum: any, t: {amount: any}) => sum + t.amount, 0);
 
         const net = income - expense;
 
